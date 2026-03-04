@@ -28,4 +28,13 @@ public class TechnicalApiClient {
                 .retrieve()
                 .bodyToFlux(FlightViewModel.class);
     }
+
+    public Mono<FlightViewModel> createFlight(FlightViewModel flightViewModel) {
+        return webClient
+                .post()
+                .uri(technicalApiProperties.getUrl() + technicalApiProperties.getFlightPath())
+                .bodyValue(flightViewModel)
+                .retrieve()
+                .bodyToMono(FlightViewModel.class);
+    }
 }
