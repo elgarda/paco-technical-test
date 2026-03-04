@@ -24,6 +24,12 @@ public class FlightFacade {
                 .flatMap(this::enrichFlight);
     }
 
+    public Mono<FlightRepresentation> createFlight(FlightRepresentation flightRepresentation) {
+        FlightRecord record = flightMapper.convert(flightRepresentation);
+        return flightService.addFlight(record)
+                .flatMap(this::enrichFlight);
+    }
+
     private Mono<FlightRepresentation> enrichFlight(FlightRecord flightRecord) {
         return airportService.findByIataCode(flightRecord.getOrigin())
                 .zipWith(airportService.findByIataCode(flightRecord.getDestination()))
