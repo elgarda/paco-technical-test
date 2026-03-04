@@ -87,10 +87,10 @@
                 <th scope="col">Photo</th>
             </tr>
             <tr th:each="flight : ${flights}">
-                <th th:text="${flight.origin.name}"></th>
-                <th th:text="${flight.destination.name}"></th>
-                <th th:text="${flight.price}"></th>
-                <th th:text="${flight.photo}"></th>
+                <td th:text="${flight.origin.name}"></td>
+                <td th:text="${flight.destination.name}"></td>
+                <td th:text="${flight.price}"></td>
+                <td th:text="${flight.image}"></td>
             </tr>
         </table>
     </ul>
