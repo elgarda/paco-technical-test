@@ -90,7 +90,12 @@
                 <td th:text="${flight.origin.name}"></td>
                 <td th:text="${flight.destination.name}"></td>
                 <td th:text="${flight.price}"></td>
-                <td th:text="${flight.image}"></td>
+                <td>
+                    <img th:src="${flight.image}"
+                         th:alt="'Vol vers ' + ${flight.destination.name}"
+                         style="width: 150px; height: auto; border-radius: 4px;"
+                         loading="lazy"/>
+                </td>
             </tr>
         </table>
     </ul>
