@@ -8,7 +8,7 @@ import technical.test.api.facade.FlightFacade;
 import technical.test.api.representation.FlightRepresentation;
 
 @RestController
-@RequestMapping("/flights")
+@RequestMapping("/flight")
 @RequiredArgsConstructor
 public class FlightEndpoint {
     private final FlightFacade flightFacade;
