@@ -18,6 +18,7 @@ import java.util.Comparator;
 public class FlightFacade {
     private static final String SORT_PRICE = "price";
     private static final String SORT_ORIGIN = "origin";
+    private static final int PAGE_SIZE = 6; // Taille de page imposée
 
     private final FlightService flightService;
     private final AirportService airportService;
@@ -25,27 +26,22 @@ public class FlightFacade {
     private final AirportMapper airportMapper;
 
     /**
-     * Récupère les vols enrichis avec une option de tri.
-     * @param sort le critère de tri ("price" ou "origin")
+     * Récupère les vols avec tri et pagination.
      */
-    public Flux<FlightRepresentation> getFlights(String sort) {
+    public Flux<FlightRepresentation> getFlights(String sort, int page) {
         return flightService.getAllFlights()
-                .flatMap(this::enrichFlight)
-                .sort(getComparator(sort));
+                .sort(getRecordComparator(sort))
+                .skip((long) page * PAGE_SIZE)
+                .take(PAGE_SIZE)
+                .flatMap(this::enrichFlight);
     }
 
-    /**
-     * Création d'un vol.
-     */
     public Mono<FlightRepresentation> createFlight(FlightRepresentation flightRepresentation) {
         FlightRecord record = flightMapper.convert(flightRepresentation);
         return flightService.addFlight(record)
                 .flatMap(this::enrichFlight);
     }
 
-    /**
-     * Enrichit un vol avec les informations complètes des aéroports.
-     */
     private Mono<FlightRepresentation> enrichFlight(FlightRecord flightRecord) {
         return airportService.findByIataCode(flightRecord.getOrigin())
                 .zipWith(airportService.findByIataCode(flightRecord.getDestination()))
@@ -57,19 +53,15 @@ public class FlightFacade {
                 });
     }
 
-    /**
-     * Le comparateur.
-     */
-    private Comparator<FlightRepresentation> getComparator(String sort) {
+    private Comparator<FlightRecord> getRecordComparator(String sort) {
         if (sort == null) {
-            return Comparator.comparing(FlightRepresentation::getDeparture);
+            return Comparator.comparing(FlightRecord::getId);
         }
 
         return switch (sort.toLowerCase()) {
-            case SORT_PRICE -> Comparator.comparing(FlightRepresentation::getPrice);
-            case SORT_ORIGIN -> Comparator.comparing(f -> f.getOrigin().getIata());
+            case SORT_PRICE -> Comparator.comparing(FlightRecord::getPrice);
+            case SORT_ORIGIN -> Comparator.comparing(FlightRecord::getOrigin);
             default -> throw new IllegalArgumentException("Invalid sort parameter: " + sort);
         };
     }
 }
-
