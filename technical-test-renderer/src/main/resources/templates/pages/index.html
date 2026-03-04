@@ -87,15 +87,10 @@
                 <th scope="col">Photo</th>
             </tr>
             <tr th:each="flight : ${flights}">
-                <td th:text="${flight.origin.name}"></td>
-                <td th:text="${flight.destination.name}"></td>
-                <td th:text="${flight.price}"></td>
-                <td>
-                    <img th:src="${flight.image}"
-                         th:alt="'Vol vers ' + ${flight.destination.name}"
-                         style="width: 150px; height: auto; border-radius: 4px;"
-                         loading="lazy"/>
-                </td>
+                <th th:text="${flight.origin.name}"></th>
+                <th th:text="${flight.destination.name}"></th>
+                <th th:text="${flight.price}"></th>
+                <th th:text="${flight.photo}"></th>
             </tr>
         </table>
     </ul>

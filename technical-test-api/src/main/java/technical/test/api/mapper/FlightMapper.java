@@ -13,9 +13,8 @@ import java.util.Collections;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, imports = Collections.class)
 public interface FlightMapper {
-
-    @Mapping(target = "origin", ignore = true)
-    @Mapping(target = "destination", ignore = true)
+    @Mapping(target = "origin", source = "origin", ignore = true)
+    @Mapping(target = "destination", source = "destination", ignore = true)
     FlightRepresentation convert(FlightRecord source);
 
     @Mapping(target = "origin", source = "origin", qualifiedByName = "extractAirportCode")
@@ -23,10 +22,7 @@ public interface FlightMapper {
     FlightRecord convert(FlightRepresentation source);
 
     @Named("extractAirportCode")
-    default String extractAirportCode(final AirportRepresentation source) {
-        if (source == null) {
-            return null;
-        }
+    default String wrapImageAsList(final AirportRepresentation source) {
         return source.getIata();
     }
 }
