@@ -8,23 +8,23 @@ import technical.test.api.facade.FlightFacade;
 import technical.test.api.representation.FlightRepresentation;
 
 @RestController
-@RequestMapping("/flight")
+@RequestMapping("/flights")
 @RequiredArgsConstructor
 public class FlightEndpoint {
     private final FlightFacade flightFacade;
 
     /**
-     * Récupère la liste des vols.
-     * @param sort Paramètre optionnel
+     * Récupère la liste des vols paginée (six par page).
+     * @param sort Critère de tri (price/origin)
+     * @param page Numéro de la page
      */
     @GetMapping
-    public Flux<FlightRepresentation> getAllFlights(@RequestParam(required = false) String sort) {
-        return flightFacade.getFlights(sort);
+    public Flux<FlightRepresentation> getAllFlights(
+            @RequestParam(required = false) String sort,
+            @RequestParam(defaultValue = "0") int page) {
+        return flightFacade.getFlights(sort, page);
     }
 
-    /**
-     * Endpoint pour la création
-     */
     @PostMapping
     public Mono<FlightRepresentation> createFlight(@RequestBody FlightRepresentation flightRepresentation) {
         return flightFacade.createFlight(flightRepresentation);
