@@ -67,6 +67,7 @@
             font-size: 0.8rem;
         }
     </style>
+
 </head>
 <body>
 <header>
@@ -75,11 +76,22 @@
 </header>
 
 <section>
-    <!-- Contenu de la recherche de vols -->
     <h2>Bienvenue sur notre site de recherche de vols</h2>
     <p>Commencez votre aventure en trouvant les meilleurs vols disponibles.</p>
-    <!-- Ajoutez ici le formulaire de recherche de vols ou d'autres éléments pertinents -->
     <ul>
+        <h2>Trouvez votre vol</h2>
+
+        <div style="margin-bottom: 20px; display: flex; gap: 15px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <div>
+                <label>Prix max :</label>
+                <input type="number" id="filterPrice" placeholder="Ex: 500" oninput="filterFlights()">
+            </div>
+            <div>
+                <label>Destination :</label>
+                <input type="text" id="filterDest" placeholder="Ex: Paris" oninput="filterFlights()">
+            </div>
+
+        </div>
         <table>
             <tr>
                 <th scope="col">Départ de</th>
@@ -87,14 +99,14 @@
                 <th scope="col">Prix</th>
                 <th scope="col">Photo</th>
             </tr>
-            <tr th:each="flight : ${flights}">
+            <tr class="flight-row" th:each="flight : ${flights}">
                 <td th:text="${flight.origin.name}"></td>
-                <td th:text="${flight.destination.name}"></td>
-                <td th:text="${flight.price}"></td>
+                <td class="dest-name" th:text="${flight.destination.name}"></td>
+                <td class="price-val" th:text="${flight.price}"></td>
                 <td>
                     <img th:src="${flight.image}"
                          th:alt="'Vol vers ' + ${flight.destination.name}"
-                         style="width: 150px; height: auto; border-radius: 4px;"
+                         style="width:150px; height:auto; border-radius:4px;"
                          loading="lazy"/>
                 </td>
             </tr>
@@ -105,5 +117,47 @@
 <footer>
     <p>&copy; 2023 Recherche de Vols. Tous droits réservés.</p>
 </footer>
+
+<script>
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+
+        if (params.has('price')) document.getElementById('filterPrice').value = params.get('price');
+        if (params.has('dest')) document.getElementById('filterDest').value = params.get('dest');
+        if (params.has('date')) document.getElementById('filterDate').value = params.get('date');
+
+
+        filterFlights();
+    });
+
+    function filterFlights() {
+        const priceInput = document.getElementById('filterPrice').value;
+        const destInput = document.getElementById('filterDest').value;
+        const dateInput = document.getElementById('filterDate').value;
+
+        const priceMax = parseFloat(priceInput) || Infinity;
+        const destSearch = destInput.toLowerCase();
+
+
+        const url = new URL(window.location);
+        if (priceInput) url.searchParams.set('price', priceInput); else url.searchParams.delete('price');
+        if (destInput) url.searchParams.set('dest', destInput); else url.searchParams.delete('dest');
+        if (dateInput) url.searchParams.set('date', dateInput); else url.searchParams.delete('date');
+        window.history.replaceState({}, '', url);
+
+
+        const rows = document.querySelectorAll('.flight-row');
+        rows.forEach(row => {
+          const price = parseFloat(row.querySelector('.price-val').innerText);
+          const dest = row.querySelector('.dest-name').innerText.toLowerCase();
+
+          const matchPrice = price <= priceMax;
+          const matchDest = dest.includes(destSearch);
+
+          row.style.display = (matchPrice && matchDest) ? "" : "none";
+        });
+    }
+</script>
 </body>
 </html>
