@@ -2,7 +2,7 @@ spring:
   application:
     name: technical-test-api
   main:
-    web-application-type: reactive
+    web-application-type: servlet
   data:
     mongodb:
       database: auchan-tech-test
